@@ -4,7 +4,6 @@ var map = L.map('map', mapOptions);
 var zoomHome = L.Control.zoomHome({ position: 'topleft' });
 zoomHome.addTo(map); map.setZoom(3);
 
-//var map = L.map('map').setView([-0.5, 35.1], 3);
 
 var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
@@ -66,7 +65,9 @@ function onEachFeatureDis(feature, layer) {
 
             //className: 'leaflet-tooltip-own'
         });
-
+    layer.on({
+        click: clickDis
+    });
 }
 
 function highlightFeature(e) {
@@ -93,28 +94,51 @@ var lastClickedLayer;
 var isoCode;
 function zoomToFeature(e) {
 
-
-    if (lastClickedLayer) {
-        countries.resetStyle(lastClickedLayer);
-    }
     var layer = e.target;
 
-
     map.fitBounds(e.target.getBounds());
+    isoCode = layer.feature.properties.iso_a2;
+    mapClicked(layer.feature.properties);
+    
+}
+
+function clickDis(e) {
+
+
+    if (lastClickedLayer) {
+        districts.resetStyle(lastClickedLayer);
+    }
+    var layer = e.target;
     layer.setStyle({
-        weight: 2,
-        //color: '#00000',
+        weight: 4,
+        color: '#000000',
         dashArray: '',
         fillOpacity: 0.4,
-        fillColor: '#FFD300'
+        fillColor: '#77dd77',
+
     });
-    isoCode = layer.feature.properties.iso_a2;
-    addDisToMap();
+
     lastClickedLayer = layer;
-
-
+    resetCanvas();
+    chartData(layer.feature.properties,'1');
 
 }
+
+function mapClicked(props) {
+    addDisToMap();
+    map.removeLayer(countries);
+    showHide("refreshButton");
+    resetCanvas();
+    chartData(props,'0');
+    showHide("chartArea");
+    
+}
+
+function resetCanvas() {
+    $('#myChart').remove(); // this is my <canvas> element
+    $('#chartArea').append('<canvas id="myChart"><canvas>');
+}
+
 
 function resetStyle(e) {
     countries.resetStyle(e.target);
@@ -166,7 +190,8 @@ info.update = function (props) {
 };
 
 info.addTo(map);
-debugger;
+
+
 var searchControl = new L.Control.Search({
     position: 'topright',
     layer: countries,
@@ -197,3 +222,22 @@ searchControl.on('search:locationfound', function (e) {
 });
 
 map.addControl(searchControl);  //inizialize search control
+
+
+function showHide(element1) {
+    var x = document.getElementById(element1);
+    if (x.style.display === "none") {
+        x.style.display = "block";
+    } else {
+        x.style.display = "none";
+    }
+}
+
+function refClicked() {
+    map.setView([-0.5, 35.1], 3);
+    map.removeLayer(districts);
+    countries.addTo(map);
+    showHide("refreshButton");
+    showHide("chartArea");
+}
+
