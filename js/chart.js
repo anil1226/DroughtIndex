@@ -15,33 +15,70 @@ function chartData(props,level) {
         cData.join();
         }
     });
-    
+    var predictSize = Object.keys(cData).length - 6;
 
     const config = {
         type: 'line',
         data: {
             datasets: [{
                 label: cLabel,
-                backgroundColor: 'rgb(255, 99, 132)',
-                borderColor: 'rgb(255, 99, 132)',
-                data: cData
+                backgroundColor: 'rgb(0, 0, 0)',
+                borderColor: 'rgb(0, 0, 0)',
+                data: cData,
+                pointBackgroundColor: function (context) {
+                    
+                    var index = context.dataIndex;
+                    var value = context.dataset.data[index];
+                    return value.y < 0 ? '#FF5252' :  // draw negative values in red
+                        value.y > 0 ? '#0583D2' :    // else, alternate values in blue and green
+                            'green';
+                },
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointBorderColor: function (context) {
+
+                    var index = context.dataIndex;
+                    
+                    return index >= predictSize ? 'green' :  // draw negative values in red
+                        //value.y > 0 ? 'blue' :    // else, alternate values in blue and green
+                            'black';
+                }
             }]
         },
         options: {
             responsive: true, maintainAspectRatio: false,
-            
+            plugins: {
+                autocolors: false,
+                annotation: {
+                    annotations: {
+                        line1: {
+                            type: 'line',
+                            yMin: 0,
+                            yMax: 0,
+                            borderColor: 'rgb(0, 0, 0)',
+                            borderWidth: 3,
+                        }
+                    }
+                },
+                legend: {
+                    display: true,
+                    labels: {
+                        color: 'rgb(0, 0, 0)',
+                        font: {
+                            size: 16,
+                            weight: 'bold'
+                        }
+                    }
+                }
+            }
         }
-  };
+    };
 
-var myChart = new Chart(
+
+    
+    var myChart = new Chart(
     document.getElementById('myChart'),
     config
     );
 }
 
-function datFix(val) {
-    var month = val.substring(4, val.length);
-    //const myArray = val.split("_");
-    //console.log(month + myArray[2]);
-    return month ;
-}

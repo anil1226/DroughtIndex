@@ -1,17 +1,46 @@
+﻿//leaflet options
 var mapOptions = { center: [-0.5, 35.1], zoom: 3, maxZoom: 12, minZoom: 3, zoomSnap: 0.97, zoomControl: false, zoomsliderControl: true, scrollWheelZoom: false, };
+//map create
 var map = L.map('map', mapOptions);
-
+//add zoom
 var zoomHome = L.Control.zoomHome({ position: 'topleft' });
 zoomHome.addTo(map); map.setZoom(3);
-
-
+//add base map
 var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(map);
+//calc latest month in data
+var arr0 = Object.values(level0);
+var allprops = arr0[3][1].properties;
+var monthsfi = [];
+$.each(allprops, function (key, value) {
+    if (key.startsWith("c") && !key.startsWith("cat")) {
+        monthsfi.push({ key, value });
+        monthsfi.join();
+    }
+});
+var latestmonth = monthsfi[monthsfi.length - 1].key;
+var latestmonthsp = datFix(latestmonth).split('_');
+//set month selection value and max
+document.getElementById("monthsel").value = "20" + latestmonthsp[1] + "-0" + getMonthFromString(latestmonthsp[0]) + "";
+document.getElementById("monthsel").max = "20" + latestmonthsp[1] + "-0" + getMonthFromString(latestmonthsp[0]) + "";
 
-var countries = L.geoJSON(level0, { style: style, onEachFeature: onEachFeature }).addTo(map);
-var districts = L.geoJSON(null, { style: style, onEachFeature: onEachFeature }).addTo(map);
+function getMonthFromString(mon) {
+    return new Date(Date.parse(mon + " 1, 2012")).getMonth() + 1
+}
+
+var countries;
+var districts;
+
+loadLayers();
+
+function loadLayers() {
+    countries = L.geoJSON(level0, { style: style, onEachFeature: onEachFeature }).addTo(map);
+    districts = L.geoJSON(null, { style: style, onEachFeature: onEachFeature }).addTo(map);
+}
+
+
 
 function style(feature) {
     return {
@@ -20,7 +49,7 @@ function style(feature) {
         color: '#000000',
         //dashArray: '3',
         fillOpacity: 0.7,
-        fillColor: getColor(feature.properties.c153Sep_22)
+        fillColor: getColor(feature.properties[latestmonth])
     };
 }
 
@@ -32,7 +61,7 @@ function onEachFeature(feature, layer) {
 
 
 
-    layer.bindTooltip("<b style='color: #000000;font-size: 18px;'>" + feature.properties.NAME + "</b><br/><b style='font-size: 14px;'>" + Math.round(feature.properties.c153Sep_22 * 100) / 100 + " (Sep 2022)</b>",
+    layer.bindTooltip("<b style='color: #000000;font-size: 18px;'>" + feature.properties.NAME + "</b><br/><b style='font-size: 14px;'>" + Math.round(feature.properties[latestmonth] * 100) / 100 + " (" + latestmonthsp[0] +" " + latestmonthsp[1]+")</b>",
         {
             //direction: 'right',
             permanent: false,
@@ -55,7 +84,7 @@ function onEachFeatureDis(feature, layer) {
 
 
 
-    layer.bindTooltip("<b style='color: #000000;font-size: 18px;'>" + feature.properties.name + "</b><br/><b style='font-size: 14px;'>" + Math.round(feature.properties.c153Sep_22 * 100) / 100 + " (Sep 2022)</b>",
+    layer.bindTooltip("<b style='color: #000000;font-size: 18px;'>" + feature.properties.name + "</b><br/><b style='font-size: 14px;'>" + Math.round(feature.properties[latestmonth] * 100) / 100 + " (" + latestmonthsp[0] + " " + latestmonthsp[1] + ")</b>",
         {
             //direction: 'right',
             permanent: false,
@@ -95,7 +124,8 @@ var isoCode;
 function zoomToFeature(e) {
 
     var layer = e.target;
-
+    document.getElementById("map").style.height = "70%";
+    setTimeout(function () { map.invalidateSize() }, 100);
     map.fitBounds(e.target.getBounds());
     isoCode = layer.feature.properties.iso_a2;
     mapClicked(layer.feature.properties);
@@ -125,8 +155,10 @@ function clickDis(e) {
 }
 
 function mapClicked(props) {
+    
     addDisToMap();
     map.removeLayer(countries);
+    
     showHide("refreshButton");
     resetCanvas();
     chartData(props,'0');
@@ -234,10 +266,43 @@ function showHide(element1) {
 }
 
 function refClicked() {
+    document.getElementById("map").style.height = "100%";
+    setTimeout(function () { map.invalidateSize() }, 100);
     map.setView([-0.5, 35.1], 3);
     map.removeLayer(districts);
     countries.addTo(map);
     showHide("refreshButton");
     showHide("chartArea");
 }
+
+function monChanged() {
+    var e = document.getElementById("monthsel");
+    var splitt = e.value.split('-');
+    var result = monthsfi.find(item => item.key.includes(toMonthName(splitt[1]) + "_" + splitt[0].slice(-2)));
+    latestmonth = result.key;
+    latestmonthsp = datFix(latestmonth).split('_');
+
+    if (map.hasLayer(countries)) {
+        countries.remove();
+        loadLayers();
+    }
+    if (map.hasLayer(districts)) {
+        addDisToMap();
+    }
+    
+}
+
+function datFix(val) {
+    var month = val.substring(4, val.length);
+    return month;
+}
+function toMonthName(monthNumber) {
+    const date = new Date();
+    date.setMonth(monthNumber - 1);
+
+    return date.toLocaleString('en-US', {
+        month: 'short',
+    });
+}
+
 
