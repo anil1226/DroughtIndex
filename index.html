@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <html lang="en">
 <head>
 	<meta charset="utf-8">
@@ -80,8 +80,8 @@
             position: absolute;
             top: 10px;
             left: 60px;
-            width: 150px;
-            height: 20px;
+/*            width: 150px;
+*/            height: 20px;
             background-color: white;
             border-radius: 5px;
             border-color: gray;
@@ -92,22 +92,43 @@
             z-index: 500;
         }
 
-        #chartArea {
-            display: flex;
+        div#chartArea {
+            display: inline-block;
             align-items: center;
             position: absolute;
             bottom: 5px;
             left: 10px;
             right: 10px;
-            width: 98%;
+            width: 75%;
             height: 28%;
-            background-color: white;
+            /*background-color: white;
             border-radius: 5px;
             border-color: gray;
             border-style: solid;
-            border-width: 1px 1px 1px 1px;
+            border-width: 1px 1px 1px 1px;*/
             opacity: 0.8;
             text-align: center;
+            z-index: 500;
+            float: left;
+        }
+        div#barArea {
+            /* display: flex;
+            align-items:flex-end;*/
+            font: 14px/16px Arial, Helvetica, sans-serif;
+            display: inline-block;
+            bottom: 5px;
+            left: 5px;
+            right: 10px;
+            width: 24%;
+            height: 98%;
+            float: right;
+            /*background-color: white;
+            border-radius: 5px;
+            border-color: gray;
+            border-style: solid;
+            border-width: 1px 1px 1px 1px;*/
+            opacity: 0.8;
+            text-align: left;
             z-index: 500;
         }
 
@@ -116,10 +137,21 @@
 			cursor: pointer;
 		}
         div#map {
-            
+            display: inline-block;
             height: 100%;
-            width: 100%;
+            width: 75%;
+            float: left;
+			margin-right:0px !important;
         }
+        div {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+		/*#barChart
+		{
+			height:250px !important;
+		}*/
 	</style>
 
 
@@ -128,24 +160,32 @@
 
 
 
-	<div id="map" ></div>
+	<div id="map"></div>
+	<div id="barArea">
+		<h2><label id="lblName"> Africa and Middle East </label></h2>
+		<h3><label id="lblMonth">September 2022</label></h3>
+		<h4 style="display:none" id="h4Pop">Population: <label id="lblPopu">1 Billion</label></h4>
+		<div id="barChartArea" style="height:250px !important;">
+			<canvas id="barChart"></canvas>
+		</div>
+		<div id="pieChartArea" style="height:250px !important;">
+			<canvas id="pieChart"></canvas>
+		</div>
+	</div>
+	<div id="chartArea" style="display:none">
+		<canvas id="myChart"></canvas>
+	</div>
 	<div id="monthArea">
 		<!--<label for="monthsel">Month</label>-->
-		<input type="month" id="monthsel"  min="2010-01" name="monthsel" onchange="monChanged()">
+		<input type="month" id="monthsel" min="2010-01" name="monthsel" onchange="monChanged()">
 	</div>
 	<button id="refreshButton" style="display:none" onclick="refClicked()">
 		<i class="fa-solid fa-arrows-rotate fa-xl"></i>
 	</button>
 	<script src="./data/levelzero.js"></script>
 	<script src="./data/levelone.js"></script>
-	<script src="./js/map.js"></script>
-
-	<div id="chartArea" style="display:none">
-		<canvas id="myChart"></canvas>
-	</div>
-
 	<script src="./js/chart.js"></script>
-
+	<script src="./js/map.js"></script>
 
 </body>
 </html>

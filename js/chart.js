@@ -29,19 +29,20 @@ function chartData(props,level) {
                     
                     var index = context.dataIndex;
                     var value = context.dataset.data[index];
-                    return value.y < 0 ? '#FF5252' :  // draw negative values in red
-                        value.y > 0 ? '#0583D2' :    // else, alternate values in blue and green
-                            'green';
+                    return index >= predictSize ? 'green' : index < predictSize & value.y < 0 ? '#FF5252' :  // draw negative values in red
+                        index < predictSize & value.y > 0 ? '#0583D2' :    // else, alternate values in blue and green
+                            'black';
+                    
                 },
                 pointBorderWidth: 2,
                 pointRadius: 4,
                 pointBorderColor: function (context) {
 
                     var index = context.dataIndex;
-                    
-                    return index >= predictSize ? 'green' :  // draw negative values in red
-                        //value.y > 0 ? 'blue' :    // else, alternate values in blue and green
-                            'black';
+                    var value = context.dataset.data[index];
+                    return value.y < 0 ? '#FF5252' :  // draw negative values in red
+                        value.y > 0 ? '#0583D2' :    // else, alternate values in blue and green
+                            'green';
                 }
             }]
         },
@@ -79,6 +80,105 @@ function chartData(props,level) {
     var myChart = new Chart(
     document.getElementById('myChart'),
     config
+    );
+}
+
+function barChartRender() { 
+
+var barLbls = [];
+var barData = [];
+$.each(barProps, function (key,value) {
+    barLbls.push(value.lable);
+    barData.push(value.data);
+});
+const data = {
+    labels: barLbls,
+    datasets: [
+        {
+            label: 'Index',
+            data: barData,
+            borderColor: 'rgb(0, 0, 0)',
+            backgroundColor: function (context) {
+
+                var index = context.dataIndex;
+                var value = context.dataset.data[index];
+                return value < 0 ? '#FF5252' :  // draw negative values in red
+                    value > 0 ? '#0583D2' :    // else, alternate values in blue and green
+                        'green';
+            },
+        }
+    ]
+};
+// </block:setup>
+// <block:config:0>
+const config = {
+    type: 'bar',
+    data: data,
+    options: {
+        indexAxis: 'y',
+        // Elements options apply to all of the options unless overridden in a dataset
+        // In this case, we are setting the border of each horizontal bar to be 2px wide
+        elements: {
+            bar: {
+                borderWidth: 2,
+            }
+        },
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'right', display: false
+            },
+            title: {
+                display: true,
+                text: 'Top 5 with extreme drought'
+            }
+        }
+    },
+};
+// </block:config>
+
+
+var barChart = new Chart(
+    document.getElementById('barChart'),
+    config
+    );
+}
+
+function pieChartRender(props) {
+    // <block:setup:1>
+    const data = {
+        labels: [
+            'Forest',
+            'Builtup',
+            'Water','Cropland'
+        ],
+        datasets: [{
+            label: 'My First Dataset',
+            data: [props.Forest, props.Builtup, props.Water, props.Cropland],
+            backgroundColor: [
+                'darkgreen',
+                'yellow',
+                '#2B65EC','#CD7F32'
+            ],
+            hoverOffset: 4
+        }]
+    };
+    // </block:setup>
+
+    // <block:config:0>
+    const config = {
+        type: 'pie',
+        data: data,
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            
+        },
+    };
+    // </block:config>
+
+    var pieChart = new Chart(
+        document.getElementById('pieChart'),
+        config
     );
 }
 

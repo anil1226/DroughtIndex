@@ -26,6 +26,9 @@ var latestmonthsp = datFix(latestmonth).split('_');
 document.getElementById("monthsel").value = "20" + latestmonthsp[1] + "-0" + getMonthFromString(latestmonthsp[0]) + "";
 document.getElementById("monthsel").max = "20" + latestmonthsp[1] + "-0" + getMonthFromString(latestmonthsp[0]) + "";
 
+$("#lblMonth").text(latestmonthsp[0] + " " + latestmonthsp[1]); 
+
+
 function getMonthFromString(mon) {
     return new Date(Date.parse(mon + " 1, 2012")).getMonth() + 1
 }
@@ -34,12 +37,45 @@ var countries;
 var districts;
 
 loadLayers();
+getBarChartData('0');
 
 function loadLayers() {
     countries = L.geoJSON(level0, { style: style, onEachFeature: onEachFeature }).addTo(map);
     districts = L.geoJSON(null, { style: style, onEachFeature: onEachFeature }).addTo(map);
 }
 
+var allProps = [];
+var barProps = [];
+var spiData;
+var barlblName;
+var arr1 = Object.values(level1);
+
+//console.log(arr1);
+
+function getBarChartData(level) {
+    debugger;
+    if (level == '0') {
+        spiData = arr0[3];
+        barlblName = 'NAME';
+    }
+    else if (level == '1') {
+        spiData = arr1[3].filter(function (el) {
+            return el.properties.iso_a2 === isoCode;
+        });
+        barlblName = 'name';
+    }
+    allProps = [];
+    for (var i = 0; i < spiData.length; i++) {
+        if ("properties" in spiData[i]) {
+            allProps.push({ lable: spiData[i].properties[barlblName], data: spiData[i].properties[latestmonth] });
+            allProps.join();
+        }
+    }
+    debugger;
+    barProps = allProps.sort((a, b) => parseFloat(a.data) - parseFloat(b.data)).slice(0, 5);
+    resetBarCanvas();
+    barChartRender();
+}
 
 
 function style(feature) {
@@ -61,7 +97,7 @@ function onEachFeature(feature, layer) {
 
 
 
-    layer.bindTooltip("<b style='color: #000000;font-size: 18px;'>" + feature.properties.NAME + "</b><br/><b style='font-size: 14px;'>" + Math.round(feature.properties[latestmonth] * 100) / 100 + " (" + latestmonthsp[0] +" " + latestmonthsp[1]+")</b>",
+    layer.bindTooltip("<b style='color: #000000;font-size: 18px;'>" + feature.properties.NAME + "</b><br/><b style='font-size: 14px;'>" + Math.round(feature.properties[latestmonth] * 100) / 100 + " (" + latestmonthsp[0] + " " + latestmonthsp[1] + ")</b><br/><b style='font-size: 14px;'>Population: " + numFormatter(feature.properties.Population) + "</b>",
         {
             //direction: 'right',
             permanent: false,
@@ -84,7 +120,7 @@ function onEachFeatureDis(feature, layer) {
 
 
 
-    layer.bindTooltip("<b style='color: #000000;font-size: 18px;'>" + feature.properties.name + "</b><br/><b style='font-size: 14px;'>" + Math.round(feature.properties[latestmonth] * 100) / 100 + " (" + latestmonthsp[0] + " " + latestmonthsp[1] + ")</b>",
+    layer.bindTooltip("<b style='color: #000000;font-size: 18px;'>" + feature.properties.name + "</b><br/><b style='font-size: 14px;'>" + Math.round(feature.properties[latestmonth] * 100) / 100 + " (" + latestmonthsp[0] + " " + latestmonthsp[1] + ")</b><br/><b style='font-size: 14px;'>Population: " + numFormatter(feature.properties.Population) + "</b>",
         {
             //direction: 'right',
             permanent: false,
@@ -120,7 +156,7 @@ function resetHighlight(e) {
 }
 
 var lastClickedLayer;
-var isoCode;
+var isoCode = '0';
 function zoomToFeature(e) {
 
     var layer = e.target;
@@ -129,7 +165,7 @@ function zoomToFeature(e) {
     map.fitBounds(e.target.getBounds());
     isoCode = layer.feature.properties.iso_a2;
     mapClicked(layer.feature.properties);
-    
+    getBarChartData('1');
 }
 
 function clickDis(e) {
@@ -150,25 +186,56 @@ function clickDis(e) {
 
     lastClickedLayer = layer;
     resetCanvas();
-    chartData(layer.feature.properties,'1');
+    chartData(layer.feature.properties, '1');
+    updateStats(layer.feature.properties, '1');
+    PieCanvas(layer.feature.properties);
+}
 
+function numFormatter(num) {
+    if (num > 999 && num < 1000000) {
+        return (num / 1000).toFixed(1) + 'K'; // convert to K for number from > 1000 < 1 million 
+    } else if (num > 1000000) {
+        return (num / 1000000).toFixed(1) + 'M'; // convert to M for number from > 1 million 
+    } else if (num < 900) {
+        return num; // if value < 1000, nothing to do
+    }
+}
+
+function updateStats(props, level) {
+    var cName;
+    if (level == "0")
+        cName = props.NAME;
+    else if (level == "1")
+        cName = props.name + ' (' + props.admin + ')';
+    $("#lblName").text(cName);
+    $("#lblPopu").text(numFormatter(props.Population));
 }
 
 function mapClicked(props) {
-    
     addDisToMap();
-    map.removeLayer(countries);
-    
+    map.removeLayer(countries);    
     showHide("refreshButton");
     resetCanvas();
-    chartData(props,'0');
+    chartData(props, '0');
+    updateStats(props, '0');
+    PieCanvas(props);
     showHide("chartArea");
-    
+    showHide('h4Pop');
 }
 
 function resetCanvas() {
     $('#myChart').remove(); // this is my <canvas> element
     $('#chartArea').append('<canvas id="myChart"><canvas>');
+}
+function resetBarCanvas() {
+    $('#barChart').remove(); // this is my <canvas> element
+    $('#barChartArea').append('<canvas id="barChart"><canvas>');
+}
+function PieCanvas(props) {
+    $('#pieChart').remove(); // this is my <canvas> element
+    $('#pieChartArea').append('<canvas id="pieChart"><canvas>');
+    if (props)
+        pieChartRender(props);
 }
 
 
@@ -270,9 +337,14 @@ function refClicked() {
     setTimeout(function () { map.invalidateSize() }, 100);
     map.setView([-0.5, 35.1], 3);
     map.removeLayer(districts);
+    isoCode = '0';
     countries.addTo(map);
     showHide("refreshButton");
     showHide("chartArea");
+    $("#lblName").text('Africa and Middle East');
+    showHide('h4Pop');
+    getBarChartData('0');
+    PieCanvas();
 }
 
 function monChanged() {
@@ -281,13 +353,18 @@ function monChanged() {
     var result = monthsfi.find(item => item.key.includes(toMonthName(splitt[1]) + "_" + splitt[0].slice(-2)));
     latestmonth = result.key;
     latestmonthsp = datFix(latestmonth).split('_');
-
+    $("#lblMonth").text(latestmonthsp[0] + " " + latestmonthsp[1]); 
     if (map.hasLayer(countries)) {
         countries.remove();
         loadLayers();
+        getBarChartData('0');
     }
+    debugger;
     if (map.hasLayer(districts)) {
-        addDisToMap();
+        if (isoCode != '0') { 
+            addDisToMap();
+            getBarChartData('1');
+        }
     }
     
 }
