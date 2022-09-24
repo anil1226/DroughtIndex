@@ -8,8 +8,19 @@ zoomHome.addTo(map); map.setZoom(3);
 //add base map
 var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
-    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    //attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 }).addTo(map);
+var dark = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+    maxZoom: 19,
+    id: 'mapbox/dark-v10',
+    tileSize: 512,
+    zoomOffset: -1
+});
+
+var wmsLayer = L.tileLayer.wms('https://services.terrascope.be/wms/v2', {
+    layers: 'WORLDCOVER_2020_MAP'
+}).addTo(map);
+
 //calc latest month in data
 var arr0 = Object.values(level0);
 var allprops = arr0[3][1].properties;
@@ -53,7 +64,6 @@ var arr1 = Object.values(level1);
 //console.log(arr1);
 
 function getBarChartData(level) {
-    debugger;
     if (level == '0') {
         spiData = arr0[3];
         barlblName = 'NAME';
@@ -71,7 +81,6 @@ function getBarChartData(level) {
             allProps.join();
         }
     }
-    debugger;
     barProps = allProps.sort((a, b) => parseFloat(a.data) - parseFloat(b.data)).slice(0, 5);
     resetBarCanvas();
     barChartRender();
@@ -292,7 +301,7 @@ info.addTo(map);
 
 
 var searchControl = new L.Control.Search({
-    position: 'topright',
+    position: 'topleft',
     layer: countries,
     propertyName: 'NAME',
     marker: false,
@@ -303,22 +312,22 @@ var searchControl = new L.Control.Search({
     }
 });
 
-searchControl.on('search:locationfound', function (e) {
+//searchControl.on('search:locationfound', function (e) {
 
-    //console.log('search:locationfound', );
+//    //console.log('search:locationfound', );
 
-    //map.removeLayer(this._markerSearch)
+//    //map.removeLayer(this._markerSearch)
 
-    e.layer.setStyle({ fillColor: '#3f0', color: '#0f0' });
-    if (e.layer._popup)
-        e.layer.openPopup();
+//    e.layer.setStyle({ fillColor: '#3f0', color: '#0f0' });
+//    if (e.layer._popup)
+//        e.layer.openPopup();
 
-}).on('search:collapsed', function (e) {
+//}).on('search:collapsed', function (e) {
 
-    countries.eachLayer(function (layer) {	//restore feature color
-        countries.resetStyle(layer);
-    });
-});
+//    countries.eachLayer(function (layer) {	//restore feature color
+//        countries.resetStyle(layer);
+//    });
+//});
 
 map.addControl(searchControl);  //inizialize search control
 
@@ -381,5 +390,32 @@ function toMonthName(monthNumber) {
         month: 'short',
     });
 }
+
+
+var baseMaps = {
+
+    "Light": tiles,
+    "Dark": dark
+
+};
+
+var overlayMaps = {
+    "Layers": {
+        "WORLD COVER": wmsLayer,
+        "spi": countries,
+        //"spi Level1": districts
+    }
+};
+
+var options = {
+    // Make the "Landmarks" group exclusive (use radio inputs)
+    //exclusiveGroups: ["Layers"],
+    // Show a checkbox next to non-exclusive group labels for toggling all
+    groupCheckboxes: false,
+    position: 'topleft'
+};
+
+var layerControl = L.control.groupedLayers(baseMaps, overlayMaps, options);
+map.addControl(layerControl);
 
 

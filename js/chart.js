@@ -48,6 +48,7 @@ function chartData(props,level) {
         },
         options: {
             responsive: true, maintainAspectRatio: false,
+
             plugins: {
                 autocolors: false,
                 annotation: {
@@ -70,7 +71,18 @@ function chartData(props,level) {
                             weight: 'bold'
                         }
                     }
-                }
+                },
+                zoom: {
+                    zoom: {
+                        wheel: {
+                            enabled: true,
+                        },
+                        pinch: {
+                            enabled: true
+                        },
+                        mode: 'x',
+                    }
+                },
             }
         }
     };

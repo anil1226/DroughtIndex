@@ -9,18 +9,22 @@
 	<!-- <link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" /> -->
 
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css" integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ==" crossorigin="" />
-	<script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js" integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ==" crossorigin=""></script>
 	<link rel="=stylesheet" href="./css/leaflet.fullscreen.css" />
 	<link rel="=stylesheet" href="./css/leaflet.zoomhome.css" />
 	<link rel="=stylesheet" href="./css/leaflet-search.css" />
 	<link rel="=stylesheet" href="./css/font-awesome.min.css" />
+
+	<script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js" integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ==" crossorigin=""></script>
+	<script src="./leaflet/leaflet-search.js"></script>
+
 	<script src="./leaflet/leaflet.zoomhome.min.js" type="text/javascript"></script>
 	<script src="./leaflet/Leaflet.fullscreen.min.js" type="text/javascript"></script>
-	<script src="./leaflet/leaflet.spin.min.js" charset="utf-8"></script>
-	<script src="./leaflet/leaflet-search.js"></script>
+	<script src="./leaflet/leaflet.groupedlayercontrol.min.js"></script>
 	<script src="https://kit.fontawesome.com/bf95ccfc20.js" crossorigin="anonymous"></script>
 	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/2.0.1/chartjs-plugin-annotation.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/1.2.1/chartjs-plugin-zoom.min.js" integrity="sha512-klQv6lz2YR+MecyFYMFRuU2eAl8IPRo6zHnsc9n142TJuJHS8CG0ix4Oq9na9ceeg1u5EkBfZsFcV3U7J51iew==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 	<script src="https://code.jquery.com/jquery-3.6.1.slim.min.js" integrity="sha256-w8CvhFs7iHNVUtnSP0YKEg00p9Ih13rlL9zGqvLdePA=" crossorigin="anonymous"></script>
 	<style>
 		html, body {
@@ -74,84 +78,88 @@
 			text-align: center;
 			z-index: 500;
 		}
-        #monthArea {
-            display: flex;
-            align-items: center;
-            position: absolute;
-            top: 10px;
-            left: 60px;
-/*            width: 150px;
-*/            height: 20px;
-            background-color: white;
-            border-radius: 5px;
-            border-color: gray;
-            border-style: solid;
-            border-width: 1px 1px 1px 1px;
-            opacity: 0.6;
-            text-align: center;
-            z-index: 500;
-        }
 
-        div#chartArea {
-            display: inline-block;
-            align-items: center;
-            position: absolute;
-            bottom: 5px;
-            left: 10px;
-            right: 10px;
-            width: 75%;
-            height: 28%;
-            /*background-color: white;
-            border-radius: 5px;
-            border-color: gray;
-            border-style: solid;
-            border-width: 1px 1px 1px 1px;*/
-            opacity: 0.8;
-            text-align: center;
-            z-index: 500;
-            float: left;
-        }
-        div#barArea {
-            /* display: flex;
-            align-items:flex-end;*/
-            font: 14px/16px Arial, Helvetica, sans-serif;
-            display: inline-block;
-            bottom: 5px;
-            left: 5px;
-            right: 10px;
-            width: 24%;
-            height: 98%;
-            float: right;
-            /*background-color: white;
-            border-radius: 5px;
-            border-color: gray;
-            border-style: solid;
-            border-width: 1px 1px 1px 1px;*/
-            opacity: 0.8;
-            text-align: left;
-            z-index: 500;
-        }
+		#monthArea {
+			display: flex;
+			align-items: center;
+			position: absolute;
+			top: 10px;
+			left: 60px;
+			/*            width: 150px;
+		*/ height: 20px;
+			background-color: white;
+			border-radius: 5px;
+			border-color: gray;
+			border-style: solid;
+			border-width: 1px 1px 1px 1px;
+			opacity: 0.6;
+			text-align: center;
+			z-index: 500;
+		}
+
+		div#chartArea {
+			display: inline-block;
+			align-items: center;
+			position: absolute;
+			bottom: 5px;
+			left: 10px;
+			right: 10px;
+			width: 75%;
+			height: 28%;
+			/*background-color: white;
+					border-radius: 5px;
+					border-color: gray;
+					border-style: solid;
+					border-width: 1px 1px 1px 1px;*/
+			opacity: 0.8;
+			text-align: center;
+			z-index: 500;
+			float: left;
+		}
+
+		div#barArea {
+			/* display: flex;
+					align-items:flex-end;*/
+			font: 14px/16px Arial, Helvetica, sans-serif;
+			display: inline-block;
+			bottom: 5px;
+			left: 5px;
+			right: 10px;
+			width: 24%;
+			height: 98%;
+			float: right;
+			/*background-color: white;
+					border-radius: 5px;
+					border-color: gray;
+					border-style: solid;
+					border-width: 1px 1px 1px 1px;*/
+			opacity: 0.8;
+			text-align: left;
+			z-index: 500;
+		}
 
 		#refreshButton:hover {
 			opacity: 0.8;
 			cursor: pointer;
 		}
-        div#map {
-            display: inline-block;
-            height: 100%;
-            width: 75%;
-            float: left;
-			margin-right:0px !important;
-        }
-        div {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+
+		div#map {
+			display: inline-block;
+			height: 100%;
+			width: 75%;
+			float: left;
+			margin-right: 0px !important;
+		}
+
+		div {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
 		/*#barChart
-		{
-			height:250px !important;
-		}*/
+				{
+					height:250px !important;
+				}*/
 	</style>
 
 
