@@ -72,17 +72,17 @@ function chartData(props,level) {
                         }
                     }
                 },
-                zoom: {
-                    zoom: {
-                        wheel: {
-                            enabled: true,
-                        },
-                        pinch: {
-                            enabled: true
-                        },
-                        mode: 'x',
-                    }
-                },
+                //zoom: {
+                //    zoom: {
+                //        wheel: {
+                //            enabled: true,
+                //        },
+                //        pinch: {
+                //            enabled: true
+                //        },
+                //        mode: 'x',
+                //    }
+                //},
             }
         }
     };

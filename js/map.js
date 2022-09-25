@@ -300,17 +300,17 @@ info.update = function (props) {
 info.addTo(map);
 
 
-var searchControl = new L.Control.Search({
-    position: 'topleft',
-    layer: countries,
-    propertyName: 'NAME',
-    marker: false,
-    moveToLocation: function (latlng, title, map) {
-        //map.fitBounds( latlng.layer.getBounds() );
-        var zoom = map.getBoundsZoom(latlng.layer.getBounds());
-        map.setView(latlng, zoom); // access the zoom
-    }
-});
+//var searchControl = new L.Control.Search({
+//    position: 'topleft',
+//    layer: countries,
+//    propertyName: 'NAME',
+//    marker: false,
+//    moveToLocation: function (latlng, title, map) {
+//        //map.fitBounds( latlng.layer.getBounds() );
+//        var zoom = map.getBoundsZoom(latlng.layer.getBounds());
+//        map.setView(latlng, zoom); // access the zoom
+//    }
+//});
 
 //searchControl.on('search:locationfound', function (e) {
 
@@ -329,7 +329,7 @@ var searchControl = new L.Control.Search({
 //    });
 //});
 
-map.addControl(searchControl);  //inizialize search control
+//map.addControl(searchControl);  //inizialize search control
 
 
 function showHide(element1) {
