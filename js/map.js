@@ -5,6 +5,8 @@ var map = L.map('map', mapOptions);
 //add zoom
 var zoomHome = L.Control.zoomHome({ position: 'topleft' });
 zoomHome.addTo(map); map.setZoom(3);
+
+map.spin(true);
 //add base map
 var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
@@ -17,9 +19,12 @@ var dark = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?
     zoomOffset: -1
 });
 
+
 var wmsLayer = L.tileLayer.wms('https://services.terrascope.be/wms/v2', {
     layers: 'WORLDCOVER_2020_MAP'
 }).addTo(map);
+
+map.spin(false);
 
 //calc latest month in data
 var arr0 = Object.values(level0);
@@ -46,6 +51,7 @@ function getMonthFromString(mon) {
 
 var countries;
 var districts;
+var opacVal = 0.8;
 
 loadLayers();
 getBarChartData('0');
@@ -89,11 +95,12 @@ function getBarChartData(level) {
 
 function style(feature) {
     return {
+        
         weight: 2,
         opacity: 1,
         color: '#000000',
         //dashArray: '3',
-        fillOpacity: 0.7,
+        fillOpacity: opacVal,
         fillColor: getColor(feature.properties[latestmonth])
     };
 }
@@ -151,7 +158,7 @@ function highlightFeature(e) {
         weight: 4,
         color: '#000000',
         dashArray: '',
-        fillOpacity: 0.4,
+        fillOpacity: opacVal,
         fillColor: '#ffffff00',
 
     });
@@ -171,7 +178,8 @@ function zoomToFeature(e) {
     var layer = e.target;
     document.getElementById("map").style.height = "70%";
     setTimeout(function () { map.invalidateSize() }, 100);
-    map.fitBounds(e.target.getBounds());
+    map.fitBounds(e.target.getBounds(), {
+    padding: [100, 100]});
     isoCode = layer.feature.properties.iso_a2;
     mapClicked(layer.feature.properties);
     getBarChartData('1');
@@ -192,6 +200,8 @@ function clickDis(e) {
         fillColor: '#77dd77',
 
     });
+
+    map.fitBounds(e.target.getBounds());
 
     lastClickedLayer = layer;
     resetCanvas();
@@ -261,7 +271,7 @@ function addDisToMap() {
     //add the data layer and style based on attribute. 
     districts = L.geoJson(level1, {
         style: style, onEachFeature: onEachFeatureDis, filter: disFilter
-        }).addTo(map);
+    }).addTo(map);
 }
 
 function disFilter(feature) {
@@ -298,38 +308,6 @@ info.update = function (props) {
 };
 
 info.addTo(map);
-
-
-//var searchControl = new L.Control.Search({
-//    position: 'topleft',
-//    layer: countries,
-//    propertyName: 'NAME',
-//    marker: false,
-//    moveToLocation: function (latlng, title, map) {
-//        //map.fitBounds( latlng.layer.getBounds() );
-//        var zoom = map.getBoundsZoom(latlng.layer.getBounds());
-//        map.setView(latlng, zoom); // access the zoom
-//    }
-//});
-
-//searchControl.on('search:locationfound', function (e) {
-
-//    //console.log('search:locationfound', );
-
-//    //map.removeLayer(this._markerSearch)
-
-//    e.layer.setStyle({ fillColor: '#3f0', color: '#0f0' });
-//    if (e.layer._popup)
-//        e.layer.openPopup();
-
-//}).on('search:collapsed', function (e) {
-
-//    countries.eachLayer(function (layer) {	//restore feature color
-//        countries.resetStyle(layer);
-//    });
-//});
-
-//map.addControl(searchControl);  //inizialize search control
 
 
 function showHide(element1) {
@@ -400,9 +378,9 @@ var baseMaps = {
 };
 
 var overlayMaps = {
-    "Layers": {
+    " ": {
         "WORLD COVER": wmsLayer,
-        "spi": countries,
+        //"spi": countries,
         //"spi Level1": districts
     }
 };
@@ -412,10 +390,18 @@ var options = {
     //exclusiveGroups: ["Layers"],
     // Show a checkbox next to non-exclusive group labels for toggling all
     groupCheckboxes: false,
-    position: 'topleft'
+    position: 'topleft',
+    collapsed: false
 };
 
 var layerControl = L.control.groupedLayers(baseMaps, overlayMaps, options);
 map.addControl(layerControl);
+
+function updateOpacity(value) {
+    
+    countries.setStyle({ fillOpacity: value });
+    districts.setStyle({ fillOpacity: value });
+    opacVal = value;
+} 
 
 
