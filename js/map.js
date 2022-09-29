@@ -383,7 +383,7 @@ var baseMaps = {
 
 var overlayMaps = {
     " ": {
-        "WORLD COVER": wmsLayer,
+        "World Cover": wmsLayer,
         //"spi": countries,
         //"spi Level1": districts
     }
@@ -400,6 +400,17 @@ var options = {
 
 var layerControl = L.control.groupedLayers(baseMaps, overlayMaps, options);
 map.addControl(layerControl);
+
+///print
+
+var printer = L.easyPrint({
+    title:'Export',
+    position:'bottomleft',
+    sizeModes: ['Current', 'A4Landscape', 'A4Portrait'],
+    filename: 'map',
+    exportOnly: true,
+    hideControlContainer: false
+}).addTo(map);
 
 function updateOpacity(value) {
     
