@@ -1,5 +1,5 @@
 
-
+var ExportData = [];
 function chartData(props,level) {
     //cData = [{ x: '2016-12-25', y: 20 }, { x: '2016-12-26', y: 10 }];
     var cData = [];
@@ -11,10 +11,11 @@ function chartData(props,level) {
     
     $.each(props, function (key, value) {
         if (key.startsWith("c") && !key.startsWith("cat")) {
-            cData.push({ x: "" +datFix(key), y:""+value});
+            cData.push({ x: "" + datFixN(key), y:""+value});
         cData.join();
         }
     });
+    ExportData = cData;
     var predictSize = Object.keys(cData).length - 6;
 
     const config = {
@@ -72,24 +73,56 @@ function chartData(props,level) {
                         }
                     }
                 },
-                //zoom: {
-                //    zoom: {
-                //        wheel: {
-                //            enabled: true,
-                //        },
-                //        pinch: {
-                //            enabled: true
-                //        },
-                //        mode: 'x',
-                //    }
-                //},
-            }
+                zoom: {
+                    zoom: {
+                        wheel: {
+                            enabled: false,
+                        },
+                        pinch: {
+                            enabled: false
+                        },
+                        drag: {
+                            enabled: true,
+                            threshold: 12
+                        },
+                        mode: 'x',
+                    },
+                    //limits: {
+                    //    x: { min: '01-2010' },
+                        
+                    //}
+                }
+            },
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        parser: 'MMM-yy',
+                        tooltipFormat: 'MMM-yy',
+                        unit: 'month',
+                        unitStepSize: 1,
+                        displayFormats: {
+                            'month': 'MMM-yy'
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Month'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Index'
+                    }
+                }
+            },
         }
     };
 
 
     
-    var myChart = new Chart(
+    window.myLine = new Chart(
     document.getElementById('myChart'),
     config
     );
@@ -192,5 +225,39 @@ function pieChartRender(props) {
         document.getElementById('pieChart'),
         config
     );
+}
+
+function datFixN(val) {
+    var monYear = val.substring(4, val.length);
+    var month = monYear.split('_');
+    return month[0] + '-' + month[1];
+}
+
+function resetZoom() {
+    window.myLine.resetZoom();
+}
+
+function jsonToCSV() {
+    debugger;
+    //var json = $.parseJSON(ExportData);
+
+    var csv = convertToCSV(ExportData);
+    var downloadLink = document.createElement("a");
+    var blob = new Blob(["\ufeff", csv]);
+    var url = URL.createObjectURL(blob);
+    downloadLink.href = url;
+    downloadLink.download = "data.csv";
+
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+}
+
+function convertToCSV(arr) {
+    const array = [Object.keys(arr[0])].concat(arr)
+
+    return array.map(it => {
+        return Object.values(it).toString()
+    }).join('\n')
 }
 

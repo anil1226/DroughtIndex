@@ -240,6 +240,8 @@ function mapClicked(props) {
     PieCanvas(props);
     showHide("chartArea");
     showHide('h4Pop');
+    showHide('chrBtns');
+    //showHide('exportCSV');
 }
 
 function resetCanvas() {
@@ -330,6 +332,8 @@ function refClicked() {
     showHide("chartArea");
     $("#lblName").text('Africa and Middle East');
     showHide('h4Pop');
+    showHide('chrBtns');
+    //showHide('exportCSV');
     getBarChartData('0');
     PieCanvas();
 }
