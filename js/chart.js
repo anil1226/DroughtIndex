@@ -1,4 +1,4 @@
-
+// line chart
 var ExportData = [];
 function chartData(props,level) {
     //cData = [{ x: '2016-12-25', y: 20 }, { x: '2016-12-26', y: 10 }];
@@ -18,6 +18,9 @@ function chartData(props,level) {
     ExportData = cData;
     var predictSize = Object.keys(cData).length - 6;
 
+    var startMonth = cData[predictSize].x;
+    var endMonth = cData[predictSize+5].x;
+
     const config = {
         type: 'line',
         data: {
@@ -28,11 +31,16 @@ function chartData(props,level) {
                 data: cData,
                 pointBackgroundColor: function (context) {
                     
+                    //var index = context.dataIndex;
+                    //var value = context.dataset.data[index];
+                    //return index >= predictSize ? 'green' : index < predictSize & value.y < 0 ? '#FF5252' :  // draw negative values in red
+                    //    index < predictSize & value.y > 0 ? '#0583D2' :    // else, alternate values in blue and green
+                    //        'black';
                     var index = context.dataIndex;
                     var value = context.dataset.data[index];
-                    return index >= predictSize ? 'green' : index < predictSize & value.y < 0 ? '#FF5252' :  // draw negative values in red
-                        index < predictSize & value.y > 0 ? '#0583D2' :    // else, alternate values in blue and green
-                            'black';
+                    return value.y < 0 ? '#FF5252' :  // draw negative values in red
+                        value.y > 0 ? '#0583D2' :    // else, alternate values in blue and green
+                            'green';
                     
                 },
                 pointBorderWidth: 2,
@@ -50,6 +58,32 @@ function chartData(props,level) {
         options: {
             responsive: true, maintainAspectRatio: false,
 
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        parser: 'MMM-yy',
+                        tooltipFormat: 'MMM-yy',
+                        unit: 'month',
+                        unitStepSize: 1,
+                        displayFormats: {
+                            'month': 'MMM-yy'
+                        },
+                        
+                    },
+                    title: {
+                        display: true,
+                        text: 'Month'
+                    },
+                    min: 'Jan-10'
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Index'
+                    }
+                }
+            },
             plugins: {
                 autocolors: false,
                 annotation: {
@@ -60,6 +94,15 @@ function chartData(props,level) {
                             yMax: 0,
                             borderColor: 'rgb(0, 0, 0)',
                             borderWidth: 3,
+                        },
+                        box1: {
+                            type: 'box',
+                            xMin: startMonth,
+                            xMax: endMonth,
+                            yMin: -3,
+                            yMax: 3,
+                            backgroundColor: 'rgba(144, 238, 144, 0.50)',
+                            
                         }
                     }
                 },
@@ -89,34 +132,10 @@ function chartData(props,level) {
                     },
                     //limits: {
                     //    x: { min: '01-2010' },
-                        
+
                     //}
                 }
-            },
-            scales: {
-                x: {
-                    type: 'time',
-                    time: {
-                        parser: 'MMM-yy',
-                        tooltipFormat: 'MMM-yy',
-                        unit: 'month',
-                        unitStepSize: 1,
-                        displayFormats: {
-                            'month': 'MMM-yy'
-                        }
-                    },
-                    title: {
-                        display: true,
-                        text: 'Month'
-                    }
-                },
-                y: {
-                    title: {
-                        display: true,
-                        text: 'Index'
-                    }
-                }
-            },
+            }
         }
     };
 
@@ -128,6 +147,7 @@ function chartData(props,level) {
     );
 }
 
+// bar chart
 function barChartRender() { 
 
 var barLbls = [];
@@ -189,6 +209,7 @@ var barChart = new Chart(
     );
 }
 
+// pie chart
 function pieChartRender(props) {
     // <block:setup:1>
     const data = {
@@ -227,16 +248,19 @@ function pieChartRender(props) {
     );
 }
 
+// month in correct format
 function datFixN(val) {
     var monYear = val.substring(4, val.length);
     var month = monYear.split('_');
     return month[0] + '-' + month[1];
 }
 
+// chart zoom
 function resetZoom() {
     window.myLine.resetZoom();
 }
 
+// export data
 function jsonToCSV() {
     debugger;
     //var json = $.parseJSON(ExportData);
@@ -253,6 +277,7 @@ function jsonToCSV() {
     document.body.removeChild(downloadLink);
 }
 
+// array to csv
 function convertToCSV(arr) {
     const array = [Object.keys(arr[0])].concat(arr)
 

@@ -6,25 +6,23 @@ var map = L.map('map', mapOptions);
 var zoomHome = L.Control.zoomHome({ position: 'topleft' });
 zoomHome.addTo(map); map.setZoom(3);
 
-map.spin(true);
-//add base map
-var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+//add base maps light and dark
+var Light = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     //attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-}).addTo(map);
+});
 var dark = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
     maxZoom: 19,
     id: 'mapbox/dark-v10',
     tileSize: 512,
     zoomOffset: -1
-});
-
-
-var wmsLayer = L.tileLayer.wms('https://services.terrascope.be/wms/v2', {
-    layers: 'WORLDCOVER_2020_MAP'
 }).addTo(map);
 
-map.spin(false);
+// add world cover wms
+var wmsLayer = L.tileLayer.wms('https://services.terrascope.be/wms/v2', {
+    layers: 'WORLDCOVER_2020_MAP'
+});
+
 
 //calc latest month in data
 var arr0 = Object.values(level0);
@@ -44,15 +42,17 @@ document.getElementById("monthsel").max = "20" + latestmonthsp[1] + "-0" + getMo
 
 $("#lblMonth").text(latestmonthsp[0] + " " + latestmonthsp[1]); 
 
-
+// get month value
 function getMonthFromString(mon) {
     return new Date(Date.parse(mon + " 1, 2012")).getMonth() + 1
 }
 
+// add spi layers
 var countries;
 var districts;
 var opacVal = 0.8;
 
+// load spi and chart on landing
 loadLayers();
 getBarChartData('0');
 
@@ -61,14 +61,14 @@ function loadLayers() {
     districts = L.geoJSON(null, { style: style, onEachFeature: onEachFeature }).addTo(map);
 }
 
+// geojson data properties proceessing
 var allProps = [];
 var barProps = [];
 var spiData;
 var barlblName;
 var arr1 = Object.values(level1);
 
-//console.log(arr1);
-
+// bar chart data
 function getBarChartData(level) {
     if (level == '0') {
         spiData = arr0[3];
@@ -92,7 +92,7 @@ function getBarChartData(level) {
     barChartRender();
 }
 
-
+// map spi style
 function style(feature) {
     return {
         
@@ -109,6 +109,7 @@ function getColor(e) {
     return (e >= 1 ? '#16558F' : e > 0.5 && e < 1 ? '#0583D2' : e > 0 && e < 0.5 ? '#61B0B7' : e > -1 && e < -0.5 ? '#FF5252' : e > -0.5 && e < 0 ? '#FF7B7B' : e < -1 ? '#FF0000' : e = null ? '#FFFFFF' : '"#FFFFFF"')
 }
 
+// spi tooltip and actions
 function onEachFeature(feature, layer) {
 
 
@@ -185,6 +186,7 @@ function zoomToFeature(e) {
     getBarChartData('1');
 }
 
+// click on level 1
 function clickDis(e) {
 
 
@@ -201,7 +203,7 @@ function clickDis(e) {
 
     });
 
-    map.fitBounds(e.target.getBounds());
+    //map.fitBounds(e.target.getBounds());
 
     lastClickedLayer = layer;
     resetCanvas();
@@ -210,6 +212,7 @@ function clickDis(e) {
     PieCanvas(layer.feature.properties);
 }
 
+// population number formatter
 function numFormatter(num) {
     if (num > 999 && num < 1000000) {
         return (num / 1000).toFixed(1) + 'K'; // convert to K for number from > 1000 < 1 million 
@@ -220,6 +223,7 @@ function numFormatter(num) {
     }
 }
 
+// stats function
 function updateStats(props, level) {
     var cName;
     if (level == "0")
@@ -230,6 +234,8 @@ function updateStats(props, level) {
     $("#lblPopu").text(numFormatter(props.Population));
 }
 
+var level0Props;
+// on click of level 0
 function mapClicked(props) {
     addDisToMap();
     map.removeLayer(countries);    
@@ -241,7 +247,7 @@ function mapClicked(props) {
     showHide("chartArea");
     showHide('h4Pop');
     showHide('chrBtns');
-    //showHide('exportCSV');
+    level0Props = props;
 }
 
 function resetCanvas() {
@@ -264,7 +270,7 @@ function resetStyle(e) {
     countries.resetStyle(e.target);
 }
 
-
+// adding level 1 to map
 function addDisToMap() {
     //remove the layer from the map entirely
     if (map.hasLayer(districts)) {
@@ -276,12 +282,14 @@ function addDisToMap() {
     }).addTo(map);
 }
 
+// filtering country selection
 function disFilter(feature) {
     if (feature.properties.iso_a2 === isoCode)
         return true
 }
 
 
+// legend of drought index
 var info = L.control({ position: 'bottomleft' });
 
 info.onAdd = function (map) {
@@ -321,6 +329,7 @@ function showHide(element1) {
     }
 }
 
+// refresh/reset clicked
 function refClicked() {
     document.getElementById("map").style.height = "100%";
     setTimeout(function () { map.invalidateSize() }, 100);
@@ -338,6 +347,7 @@ function refClicked() {
     PieCanvas();
 }
 
+// changed month
 function monChanged() {
     var e = document.getElementById("monthsel");
     var splitt = e.value.split('-');
@@ -350,7 +360,6 @@ function monChanged() {
         loadLayers();
         getBarChartData('0');
     }
-    debugger;
     if (map.hasLayer(districts)) {
         if (isoCode != '0') { 
             addDisToMap();
@@ -360,10 +369,13 @@ function monChanged() {
     
 }
 
+// fix dates of props
 function datFix(val) {
     var month = val.substring(4, val.length);
     return month;
 }
+
+// month number to name
 function toMonthName(monthNumber) {
     const date = new Date();
     date.setMonth(monthNumber - 1);
@@ -373,10 +385,10 @@ function toMonthName(monthNumber) {
     });
 }
 
-
+// map layer menu
 var baseMaps = {
 
-    "Light": tiles,
+    "Light": Light,
     "Dark": dark
 
 };
@@ -401,17 +413,8 @@ var options = {
 var layerControl = L.control.groupedLayers(baseMaps, overlayMaps, options);
 map.addControl(layerControl);
 
-///print
 
-var printer = L.easyPrint({
-    title:'Export',
-    position:'bottomleft',
-    sizeModes: ['Current', 'A4Landscape', 'A4Portrait'],
-    filename: 'map',
-    exportOnly: true,
-    hideControlContainer: false
-}).addTo(map);
-
+// change opacity
 function updateOpacity(value) {
     
     countries.setStyle({ fillOpacity: value });
@@ -419,4 +422,51 @@ function updateOpacity(value) {
     opacVal = value;
 } 
 
+// legend for world cover
+var wcLegend = L.control({ position: 'bottomright' });
 
+wcLegend.onAdd = function (map) {
+    var div = L.DomUtil.create('div', 'info legend');
+    div.innerHTML +=
+        '<img src="world_cover.png" alt="legend" width="134" height="147">';
+    return div;
+};
+
+
+map.on('overlayadd', function (eventLayer) {
+    if (eventLayer.name === 'World Cover') {
+        wcLegend.addTo(this);
+    } 
+});
+
+map.on('overlayremove', function (eventLayer) {
+    if (eventLayer.name === 'World Cover') {
+        this.removeControl(wcLegend);
+    } 
+});
+
+//if clicked ouside the country boundary
+map.on('click', function (e) {
+    var popLocation = e.latlng;
+    inOutCheck(popLocation);
+});
+
+var outSide = true;
+function inOutCheck(cood) {
+    districts.eachLayer(function (memberLayer) {
+        if (memberLayer.contains(cood)) {
+            outSide = false;
+        }
+        
+    });
+
+    if (outSide) {
+        addDisToMap();
+        resetCanvas();
+        chartData(level0Props, '0');
+        updateStats(level0Props, '0');
+        PieCanvas(level0Props);
+    }
+        
+    outSide = true;
+}
