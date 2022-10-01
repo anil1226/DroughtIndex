@@ -1,5 +1,5 @@
 ﻿//leaflet options
-var mapOptions = { center: [-0.5, 35.1], zoom: 3, maxZoom: 12, minZoom: 3, zoomSnap: 0.97, zoomControl: false, zoomsliderControl: true, scrollWheelZoom: false, };
+var mapOptions = { center: [-0.5, 35.1], zoom: 3, maxZoom: 12, minZoom: 3, zoomSnap: 0.97, zoomControl: false, zoomsliderControl: true, scrollWheelZoom: true };
 //map create
 var map = L.map('map', mapOptions);
 //add zoom
