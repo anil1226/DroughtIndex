@@ -95,25 +95,28 @@
             left: 10px;
             right: 10px;
             width: 75%;
-            height: 28%;
+            height: 31%;
             opacity: 0.8;
             text-align: center;
             z-index: 500;
             float: left;
+            border:2px solid black;
         }
 
         div#barArea {
             font: 14px/16px Arial, Helvetica, sans-serif;
             display: inline-block;
-            bottom: 5px;
-            left: 5px;
+            bottom: 10px;
+            top: 10px;
+            left: 10px;
             right: 10px;
             width: 24%;
-            height: 98%;
+            height: 100%;
             float: right;
             opacity: 0.8;
-            text-align: left;
+            text-align: center;
             z-index: 500;
+            border: 2px solid black;
         }
 
         #refreshButton:hover {
@@ -124,9 +127,10 @@
         div#map {
             display: inline-block;
             height: 100%;
-            width: 75%;
+            width: 76%;
             float: left;
             margin-right: 0px !important;
+
         }
 
         div {
@@ -153,7 +157,7 @@
             z-index: 500;
         }
 
-        .btn {
+       /* .btn {
             display: flex;
             align-items: center;
             position: absolute;
@@ -168,14 +172,23 @@
             opacity: 0.6;
             text-align: center;
             z-index: 500;
-        }
-
-        .zoom {
+        }*/
+        /*.zoom {
             left: 10px;
         }
 
         .csv {
             left: 50px;
+        }*/
+         .btn {
+            
+            background-color: white;
+            border-radius: 5px;
+            border-color: gray;
+            border-style: solid;
+            border-width: 1px 1px 1px 1px;
+            opacity: 1;
+            float:right;
         }
     </style>
 
@@ -194,8 +207,12 @@
             <canvas id="pieChart"></canvas>
         </div>
     </div>
-    <div id="chartArea" style="display:none">
+    <div id="chartArea" style="display:none;">
         <canvas id="myChart"></canvas>
+        <div id="chrBtns" style="display:none">
+            <button id="resetZoom" class="btn zoom" onclick="resetZoom()" title="Reset Zoom"><i class="fa-solid fa-arrows-rotate"></i></button>
+            <button id="exportCSV" class="btn csv" onclick="jsonToCSV()" title="Export to CSV"><i class="fa-solid fa-file-csv"></i></button>
+        </div>
     </div>
     <div id="monthArea">
         <input type="month" id="monthsel" min="2010-01" name="monthsel" onchange="monChanged()">
@@ -204,10 +221,7 @@
         <i class="fa-solid fa-left-long fa-xl"></i>
     </button>
     <input id="slide" title="spi Opacity" type="range" min="0" max="1" step="0.1" value="0.8" onchange="updateOpacity(this.value)"/>
-    <div id="chrBtns" style="display:none">
-        <button id="resetZoom" class="btn zoom" onclick="resetZoom()" title="Reset Zoom"><i class="fa-solid fa-arrows-rotate"></i></button>
-        <button id="exportCSV" class="btn csv" onclick="jsonToCSV()" title="Export to CSV"><i class="fa-solid fa-file-csv fa-lg"></i></button>
-    </div>
+    
     <script src="./data/levelzero.js"></script>
     <script src="./data/levelone.js"></script>
     <script src="./js/chart.js"></script>

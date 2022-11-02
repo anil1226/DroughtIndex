@@ -106,7 +106,7 @@ function style(feature) {
 }
 
 function getColor(e) {
-    return (e >= 1 ? '#16558F' : e > 0.5 && e < 1 ? '#0583D2' : e > 0 && e < 0.5 ? '#61B0B7' : e > -1 && e < -0.5 ? '#FF5252' : e > -0.5 && e < 0 ? '#FF7B7B' : e < -1 ? '#FF0000' : e = null ? '#FFFFFF' : '"#FFFFFF"')
+    return (e >= 1 ? '#16558F' : e > 0.5 && e < 1 ? '#0583D2' : e > 0 && e < 0.5 ? '#61B0B7' : e > -1 && e < -0.5 ? '#FF5252' : e > -0.5 && e < 0 ? '#FF7B7B' : e < -1 ? '#FF0000' : e = null ? 'grey' : 'grey')
 }
 
 // spi tooltip and actions
@@ -177,7 +177,7 @@ var isoCode = '0';
 function zoomToFeature(e) {
 
     var layer = e.target;
-    document.getElementById("map").style.height = "70%";
+    document.getElementById("map").style.height = "68%";
     setTimeout(function () { map.invalidateSize() }, 100);
     map.fitBounds(e.target.getBounds(), {
     padding: [100, 100]});
