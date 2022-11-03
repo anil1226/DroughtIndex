@@ -34,11 +34,11 @@ $.each(allprops, function (key, value) {
         monthsfi.join();
     }
 });
-var latestmonth = monthsfi[monthsfi.length - 1].key;
+var latestmonth = monthsfi[monthsfi.length - 7].key;
 var latestmonthsp = datFix(latestmonth).split('_');
 //set month selection value and max
-document.getElementById("monthsel").value = "20" + latestmonthsp[1] + "-0" + getMonthFromString(latestmonthsp[0]) + "";
-document.getElementById("monthsel").max = "20" + latestmonthsp[1] + "-0" + getMonthFromString(latestmonthsp[0]) + "";
+document.getElementById("monthsel").value = "20" + latestmonthsp[1] + "-0" + (getMonthFromString(latestmonthsp[0]))  + "";
+document.getElementById("monthsel").max = "20" + latestmonthsp[1] + "-0" + (getMonthFromString(latestmonthsp[0])+6) + "";
 
 $("#lblMonth").text(latestmonthsp[0] + " " + latestmonthsp[1]); 
 
