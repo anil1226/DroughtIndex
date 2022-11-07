@@ -36,9 +36,11 @@ $.each(allprops, function (key, value) {
 });
 var latestmonth = monthsfi[monthsfi.length - 7].key;
 var latestmonthsp = datFix(latestmonth).split('_');
+var latestmonthinDate = new Date("20" + latestmonthsp[1] + "-" + (getMonthFromString(latestmonthsp[0])) + "-01");
+var predmonth = new Date(latestmonthinDate.setMonth(latestmonthinDate.getMonth() + 7));
 //set month selection value and max
-document.getElementById("monthsel").value = "20" + latestmonthsp[1] + "-0" + (getMonthFromString(latestmonthsp[0]))  + "";
-document.getElementById("monthsel").max = "20" + latestmonthsp[1] + "-0" + (getMonthFromString(latestmonthsp[0])+6) + "";
+document.getElementById("monthsel").value = "20" + latestmonthsp[1] + "-0" + (getMonthFromString(latestmonthsp[0])) + "";
+document.getElementById("monthsel").max = "" + predmonth.getFullYear() + "-0" + predmonth.getMonth() + "";
 
 $("#lblMonth").text(latestmonthsp[0] + " " + latestmonthsp[1]); 
 
