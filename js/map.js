@@ -116,7 +116,7 @@ function onEachFeature(feature, layer) {
 
 
 
-    layer.bindTooltip("<b style='color: #000000;font-size: 18px;'>" + feature.properties.NAME + "</b><br/><b style='font-size: 14px;'>" + Math.round(feature.properties[latestmonth] * 100) / 100 + " (" + latestmonthsp[0] + " " + latestmonthsp[1] + ")</b><br/><b style='font-size: 14px;'>Population: " + numFormatter(feature.properties.Population) + "</b>",
+    layer.bindTooltip("<b style='color: #000000;font-size: 18px;'>" + feature.properties.NAME + "</b><br/><b style='font-size: 14px;'>" + Math.round(feature.properties[latestmonth] * 100) / 100 + " (" + latestmonthsp[0] + " " + latestmonthsp[1] + ")</b><br/><b style='font-size: 14px;'>Population: " + numFormatter(feature.properties.pop_sum) + "</b>",
         {
             //direction: 'right',
             permanent: false,
@@ -139,7 +139,7 @@ function onEachFeatureDis(feature, layer) {
 
 
 
-    layer.bindTooltip("<b style='color: #000000;font-size: 18px;'>" + feature.properties.name + "</b><br/><b style='font-size: 14px;'>" + Math.round(feature.properties[latestmonth] * 100) / 100 + " (" + latestmonthsp[0] + " " + latestmonthsp[1] + ")</b><br/><b style='font-size: 14px;'>Population: " + numFormatter(feature.properties.Population) + "</b>",
+    layer.bindTooltip("<b style='color: #000000;font-size: 18px;'>" + feature.properties.name + "</b><br/><b style='font-size: 14px;'>" + Math.round(feature.properties[latestmonth] * 100) / 100 + " (" + latestmonthsp[0] + " " + latestmonthsp[1] + ")</b><br/><b style='font-size: 14px;'>Population: " + numFormatter(feature.properties.pop_sum) + "</b>",
         {
             //direction: 'right',
             permanent: false,
@@ -233,7 +233,7 @@ function updateStats(props, level) {
     else if (level == "1")
         cName = props.name + ' (' + props.admin + ')';
     $("#lblName").text(cName);
-    $("#lblPopu").text(numFormatter(props.Population));
+    $("#lblPopu").text(numFormatter(props.pop_sum));
 }
 
 var level0Props;

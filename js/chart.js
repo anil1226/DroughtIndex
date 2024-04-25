@@ -213,22 +213,39 @@ var barChart = new Chart(
 function pieChartRender(props) {
     // <block:setup:1>
     const data = {
-        labels: [
-            'Forest',
-            'Builtup',
-            'Water','Cropland'
-        ],
+        labels: ['Shrub', 'Herb', 'Crop', 'Built', 'Bare', 'Water', 'Wetland', 'Moss', 'Forest', 'Snow', 'Others'],
         datasets: [{
-            label: 'My First Dataset',
-            data: [props.Forest, props.Builtup, props.Water, props.Cropland],
-            backgroundColor: [
-                'darkgreen',
-                'yellow',
-                '#2B65EC','#CD7F32'
-            ],
-            hoverOffset: 4
+          label: '%',
+          data: [
+            props.lc_shrub, 
+            props.lc_herb, 
+            props.lc_crop, 
+            props.lc_built, 
+            props.lc_bare, 
+            props.lc_water, 
+            props.lc_wetl, 
+            props.lc_moss, 
+            props.lc_for, 
+            props.lc_snow, 
+            props.lc_others
+          ],
+          backgroundColor: [
+            '#2E8B57', // Shrub
+            '#98FB98', // Herb
+            '#D2B48C', // Crop
+            '#D3D3D3', // Built
+            '#F5DEB3', // Bare
+            '#1E90FF', // Water
+            '#556B2F', // Wetland
+            '#7CFC00', // Moss
+            '#228B22', // Forest
+            '#FFFFFF', // Snow
+            '#808080'  // Others (Grey)
+          ],
+          hoverOffset: 4
         }]
-    };
+      };
+      
     // </block:setup>
 
     // <block:config:0>
